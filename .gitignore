@@ -92,3 +92,8 @@ Desktop.ini
 .azure-dev/
 # ASP.NET local development configuration
 **/appsettings.Development.json
+
+# ------------------------------------------------------------
+# LOCAL PRODUCTION PUBLISH ARTIFACTS
+# ------------------------------------------------------------
+publish/

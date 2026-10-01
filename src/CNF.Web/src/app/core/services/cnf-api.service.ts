@@ -9,6 +9,8 @@ import {
   FoodSearchResponse
 } from '../models/food.model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +18,7 @@ export class CnfApiService {
 
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = 'http://localhost:5285/api';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   searchFoods(
     query: string,
