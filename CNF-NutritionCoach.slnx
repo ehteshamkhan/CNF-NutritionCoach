@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CNF.Api/CNF.Api.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,573 @@
+<div class="details-page">
+
+  <header class="details-topbar">
+
+    <button
+      type="button"
+      class="back-button"
+      (click)="goBack()">
+      ←
+      <span>Back to foods</span>
+    </button>
+
+    <div class="topbar-brand">
+      NutritionCoach
+    </div>
+
+  </header>
+
+  <main class="details-content">
+
+    @if (loading()) {
+
+      <div class="loading-state">
+
+        <mat-spinner diameter="46"></mat-spinner>
+
+        <h2>Loading food profile</h2>
+
+        <p>
+          Retrieving the Canadian Nutrient File record...
+        </p>
+
+      </div>
+
+    } @else if (error()) {
+
+      <div class="error-card">
+
+        <div class="error-icon">
+          !
+        </div>
+
+        <h2>Unable to load this food</h2>
+
+        <p>{{ error() }}</p>
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="goBack()">
+          Return to search
+        </button>
+
+      </div>
+
+    } @else if (food()) {
+
+      <section class="food-heading">
+
+        <div>
+
+          <div class="breadcrumb">
+            CANADIAN NUTRIENT FILE
+            <span>•</span>
+            FOOD {{ food()!.foodCode }}
+          </div>
+
+          <h1>
+            {{ food()!.foodName }}
+          </h1>
+
+          <p class="subtitle">
+            Nutrient values shown per 100 g unless otherwise indicated.
+          </p>
+
+        </div>
+
+        <div class="cnf-badge">
+          <span class="badge-dot"></span>
+          Verified CNF record
+        </div>
+
+      </section>
+
+      <section class="hero-stats">
+
+        <article class="stat-card energy">
+
+          <div class="stat-label">
+            ENERGY
+          </div>
+
+          <div class="stat-value">
+            {{ formatAmount(energy()) }}
+          </div>
+
+          <div class="stat-foot">
+            per 100 g
+          </div>
+
+        </article>
+
+        <article class="stat-card protein">
+
+          <div class="stat-label">
+            PROTEIN
+          </div>
+
+          <div class="stat-value">
+            {{ formatAmount(protein()) }}
+          </div>
+
+          <div class="stat-foot">
+            per 100 g
+          </div>
+
+        </article>
+
+        <article class="stat-card fat">
+
+          <div class="stat-label">
+            FAT
+          </div>
+
+          <div class="stat-value">
+            {{ formatAmount(fat()) }}
+          </div>
+
+          <div class="stat-foot">
+            total lipids
+          </div>
+
+        </article>
+
+        <article class="stat-card carbs">
+
+          <div class="stat-label">
+            CARBOHYDRATE
+          </div>
+
+          <div class="stat-value">
+            {{ formatAmount(carbs()) }}
+          </div>
+
+          <div class="stat-foot">
+            total carbohydrate
+          </div>
+
+        </article>
+
+      </section>
+
+      <section class="content-grid">
+
+        <div class="main-column">
+
+          <article class="panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <div class="panel-kicker">
+                  MACRONUTRIENTS
+                </div>
+
+                <h2>
+                  Core nutrition
+                </h2>
+              </div>
+
+              <div class="panel-count">
+                {{ macros().length }}
+              </div>
+
+            </div>
+
+            <div class="nutrient-list">
+
+              @for (
+                nutrient of macros();
+                track nutrient.nutrientCode
+              ) {
+
+                <div class="nutrient-row">
+
+                  <div class="nutrient-name">
+
+                    <span class="nutrient-dot macro"></span>
+
+                    <div>
+                      <strong>
+                        {{ nutrient.nutrientName }}
+                      </strong>
+
+                      <small>
+                        CNF {{ nutrient.nutrientCode }}
+                        •
+                        {{ nutrient.nutrientSymbol }}
+                      </small>
+                    </div>
+
+                  </div>
+
+                  <div class="nutrient-value">
+                    {{ formatAmount(nutrient) }}
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </article>
+
+          <article class="panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <div class="panel-kicker mineral-kicker">
+                  MINERALS
+                </div>
+
+                <h2>
+                  Minerals
+                </h2>
+              </div>
+
+              <div class="panel-count mineral-count">
+                {{ minerals().length }}
+              </div>
+
+            </div>
+
+            <div class="nutrient-list">
+
+              @for (
+                nutrient of minerals();
+                track nutrient.nutrientCode
+              ) {
+
+                <div class="nutrient-row">
+
+                  <div class="nutrient-name">
+
+                    <span class="nutrient-dot mineral"></span>
+
+                    <div>
+                      <strong>
+                        {{ nutrient.nutrientName }}
+                      </strong>
+
+                      <small>
+                        CNF {{ nutrient.nutrientCode }}
+                      </small>
+                    </div>
+
+                  </div>
+
+                  <div class="nutrient-value">
+                    {{ formatAmount(nutrient) }}
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </article>
+
+          <article class="panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <div class="panel-kicker vitamin-kicker">
+                  VITAMINS
+                </div>
+
+                <h2>
+                  Vitamins &amp; folates
+                </h2>
+              </div>
+
+              <div class="panel-count vitamin-count">
+                {{ vitamins().length }}
+              </div>
+
+            </div>
+
+            <div class="nutrient-list">
+
+              @for (
+                nutrient of vitamins();
+                track nutrient.nutrientCode
+              ) {
+
+                <div class="nutrient-row">
+
+                  <div class="nutrient-name">
+
+                    <span class="nutrient-dot vitamin"></span>
+
+                    <div>
+                      <strong>
+                        {{ nutrient.nutrientName }}
+                      </strong>
+
+                      <small>
+                        CNF {{ nutrient.nutrientCode }}
+                      </small>
+                    </div>
+
+                  </div>
+
+                  <div class="nutrient-value">
+                    {{ formatAmount(nutrient) }}
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </article>
+
+          <article class="panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <div class="panel-kicker amino-kicker">
+                  AMINO ACIDS
+                </div>
+
+                <h2>
+                  Amino acid profile
+                </h2>
+              </div>
+
+              <div class="panel-count amino-count">
+                {{ aminoAcids().length }}
+              </div>
+
+            </div>
+
+            <div class="nutrient-list">
+
+              @for (
+                nutrient of aminoAcids();
+                track nutrient.nutrientCode
+              ) {
+
+                <div class="nutrient-row">
+
+                  <div class="nutrient-name">
+
+                    <span class="nutrient-dot amino"></span>
+
+                    <div>
+                      <strong>
+                        {{ nutrient.nutrientName }}
+                      </strong>
+
+                      <small>
+                        CNF {{ nutrient.nutrientCode }}
+                      </small>
+                    </div>
+
+                  </div>
+
+                  <div class="nutrient-value">
+                    {{ formatAmount(nutrient) }}
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </article>
+
+          <article class="panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <div class="panel-kicker fatty-kicker">
+                  FATTY ACIDS
+                </div>
+
+                <h2>
+                  Fatty acid profile
+                </h2>
+              </div>
+
+              <div class="panel-count fatty-count">
+                {{ fattyAcids().length }}
+              </div>
+
+            </div>
+
+            <div class="nutrient-list">
+
+              @for (
+                nutrient of fattyAcids();
+                track nutrient.nutrientCode
+              ) {
+
+                <div class="nutrient-row">
+
+                  <div class="nutrient-name">
+
+                    <span class="nutrient-dot fatty"></span>
+
+                    <div>
+                      <strong>
+                        {{ nutrient.nutrientName }}
+                      </strong>
+
+                      <small>
+                        CNF {{ nutrient.nutrientCode }}
+                      </small>
+                    </div>
+
+                  </div>
+
+                  <div class="nutrient-value">
+                    {{ formatAmount(nutrient) }}
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </article>
+
+        </div>
+
+        <aside class="side-column">
+
+          <article class="panel measures-panel">
+
+            <div class="panel-heading">
+
+              <div>
+                <div class="panel-kicker">
+                  SERVING DATA
+                </div>
+
+                <h2>
+                  Measures
+                </h2>
+              </div>
+
+              <div class="panel-count">
+                {{ measures().length }}
+              </div>
+
+            </div>
+
+            @if (measures().length > 0) {
+
+              <div class="measure-list">
+
+                @for (
+                  measure of measures();
+                  track measure.measureCode
+                ) {
+
+                  <div class="measure-card">
+
+                    <div class="measure-main">
+
+                      <strong>
+                        {{ measure.measure }}
+                      </strong>
+
+                      <span>
+                        {{ measure.measureType }}
+                      </span>
+
+                    </div>
+
+                    <div class="measure-weight">
+                      {{ formatNumber(measure.weightGrams) }}
+                      <small>g</small>
+                    </div>
+
+                  </div>
+
+                }
+
+              </div>
+
+            } @else {
+
+              <div class="no-measures">
+                No measure records available.
+              </div>
+
+            }
+
+          </article>
+
+          <article class="data-note">
+
+            <div class="note-icon">
+              i
+            </div>
+
+            <div>
+              <strong>
+                About these values
+              </strong>
+
+              <p>
+                Nutrient values come directly from the validated
+                Canadian Nutrient File dataset. Missing source values
+                remain missing rather than being interpreted as zero.
+              </p>
+            </div>
+
+          </article>
+
+          <article class="mini-stat-card">
+
+            <span>
+              Fibre
+            </span>
+
+            <strong>
+              {{ formatAmount(fibre()) }}
+            </strong>
+          </article>
+
+          <article class="mini-stat-card blue">
+
+            <span>
+              Calcium
+            </span>
+
+            <strong>
+              {{ formatAmount(calcium()) }}
+            </strong>
+          </article>
+
+          <article class="mini-stat-card orange">
+
+            <span>
+              Sodium
+            </span>
+
+            <strong>
+              {{ formatAmount(sodium()) }}
+            </strong>
+          </article>
+
+        </aside>
+
+      </section>
+
+    }
+
+  </main>
+
+</div>

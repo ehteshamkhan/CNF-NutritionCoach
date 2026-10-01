@@ -1,0 +1,765 @@
+<div class="maliha-page">
+
+  <!-- ====================================================== -->
+  <!-- ACCESSIBLE SITE HEADER -->
+  <!-- ====================================================== -->
+
+  <header class="maliha-header">
+
+    <div class="maliha-header-inner">
+
+      <a
+        href="/"
+        class="maliha-brand"
+        aria-label="Maliha home"
+      >
+        <span class="maliha-brand-mark" aria-hidden="true">
+          M
+        </span>
+
+        <span class="maliha-brand-copy">
+          <span class="maliha-brand-name">
+            Maliha
+          </span>
+
+          <span class="maliha-brand-tagline">
+            Nutrition, thoughtfully made.
+          </span>
+        </span>
+      </a>
+
+      <nav
+        class="maliha-navigation"
+        aria-label="Primary navigation"
+      >
+        <a
+          href="#search"
+          class="maliha-nav-link is-current"
+        >
+          Search
+        </a>
+
+        <a
+          href="#about"
+          class="maliha-nav-link"
+        >
+          About
+        </a>
+      </nav>
+
+    </div>
+
+  </header>
+
+  <!-- ====================================================== -->
+  <!-- MAIN -->
+  <!-- ====================================================== -->
+
+  <main>
+
+    <!-- ==================================================== -->
+    <!-- HERO -->
+    <!-- ==================================================== -->
+
+    <section
+      class="maliha-hero"
+      aria-labelledby="maliha-hero-title"
+    >
+
+      <div
+        class="maliha-hero-glow maliha-hero-glow-one"
+        aria-hidden="true"
+      ></div>
+
+      <div
+        class="maliha-hero-glow maliha-hero-glow-two"
+        aria-hidden="true"
+      ></div>
+
+      <div class="maliha-hero-inner">
+
+        <p class="maliha-eyebrow">
+          <span
+            class="maliha-eyebrow-line"
+            aria-hidden="true"
+          ></span>
+
+          Canadian Nutrient File
+        </p>
+
+        <h1 id="maliha-hero-title">
+          Nourishment,
+          <span>with a little more heart.</span>
+        </h1>
+
+        <p class="maliha-hero-description">
+          Explore thousands of Canadian foods and discover
+          detailed nutrition information, beautifully organized
+          and easy to understand.
+        </p>
+
+      </div>
+
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- SEARCH -->
+    <!-- ==================================================== -->
+
+    <section
+      id="search"
+      class="maliha-search-section"
+      aria-labelledby="maliha-search-title"
+    >
+
+      <div class="maliha-content-width">
+
+        <div class="maliha-search-intro">
+
+          <p class="maliha-section-kicker">
+            Explore
+          </p>
+
+          <h2 id="maliha-search-title">
+            Search Canadian foods
+          </h2>
+
+          <p>
+            Find a food, then explore its nutrient and serving
+            information from the Canadian Nutrient File.
+          </p>
+
+        </div>
+
+        <!-- SEARCH CARD -->
+
+        <div class="maliha-search-card">
+
+          <div class="search-shell">
+
+            <form
+              class="search-form"
+              (submit)="$event.preventDefault(); searchNow()"
+            >
+
+              <mat-form-field
+                appearance="outline"
+                class="search-field"
+              >
+
+                <mat-label>
+                  Search foods
+                </mat-label>
+
+                <input
+                  #searchInput
+                  matInput
+                  type="search"
+                  autocomplete="off"
+                  spellcheck="false"
+                  [value]="query()"
+                  [attr.aria-activedescendant]="getActiveDescendant()"
+                  aria-controls="food-search-results"
+                  aria-autocomplete="list"
+                  aria-label="Search Canadian Nutrient File foods"
+                  placeholder="Try cheese souffle, apple, chicken..."
+                  (input)="onQueryInput($event)"
+                  (keydown)="onSearchKeydown($event)"
+                />
+
+                @if (query()) {
+
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    class="clear-button"
+                    aria-label="Clear food search"
+                    (click)="clearSearch()"
+                  >
+                    <span aria-hidden="true">×</span>
+                  </button>
+
+                }
+
+              </mat-form-field>
+
+              <button
+                mat-flat-button
+                type="submit"
+                class="search-button"
+                [disabled]="query().trim().length < minimumQueryLength"
+              >
+
+                @if (loading()) {
+
+                  <mat-spinner
+                    diameter="20"
+                    aria-label="Searching"
+                  />
+
+                } @else {
+
+                  <span
+                    class="search-button-icon"
+                    aria-hidden="true"
+                  >
+                    ⌕
+                  </span>
+
+                }
+
+                <span>
+                  Search
+                </span>
+
+              </button>
+
+            </form>
+
+            <div class="search-hint">
+
+              <span>
+
+                @if (query().trim().length < minimumQueryLength) {
+                  Type at least 2 characters
+                } @else {
+                  Results update automatically as you type
+                }
+
+              </span>
+
+              <span class="keyboard-hints">
+
+                <kbd>↑</kbd>
+                <kbd>↓</kbd>
+                Navigate
+
+                <kbd>Enter</kbd>
+                Open
+
+                <kbd>Esc</kbd>
+                Clear selection
+
+              </span>
+
+            </div>
+
+          </div>
+
+          <!-- QUICK SEARCHES -->
+
+          <div class="quick-searches">
+
+            <span class="quick-label">
+              Try
+            </span>
+
+            @for (
+              term of quickSearches;
+              track term
+            ) {
+
+              <button
+                type="button"
+                class="quick-chip"
+                (click)="useQuickSearch(term)"
+              >
+                {{ term }}
+              </button>
+
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- RESULTS -->
+    <!-- ==================================================== -->
+
+    <section
+      class="results-section"
+      aria-label="Food search results"
+    >
+
+      <div class="results-container">
+
+        <!-- RESULT HEADER -->
+
+        @if (searched() || results().length > 0) {
+
+          <div class="results-header">
+
+            <div>
+
+              <p class="section-kicker">
+                Food search
+              </p>
+
+              <h2>
+
+                @if (loading()) {
+
+                  Searching...
+
+                } @else if (error()) {
+
+                  Search unavailable
+
+                } @else if (resultCount() === 0) {
+
+                  No foods found
+
+                } @else {
+
+                  {{ resultCount() }}
+                  {{ resultCount() === 1 ? 'food' : 'foods' }}
+                  found
+
+                }
+
+              </h2>
+
+              @if (
+                query().trim() &&
+                !loading() &&
+                !error() &&
+                resultCount() > 0
+              ) {
+
+                <p class="results-subtitle">
+
+                  Showing results for
+                  <strong>
+                    "{{ query().trim() }}"
+                  </strong>
+
+                </p>
+
+              }
+
+            </div>
+
+            @if (
+              !loading() &&
+              !error() &&
+              resultCount() > 0
+            ) {
+
+              <div class="result-count-pill">
+
+                <span
+                  class="count-dot"
+                  aria-hidden="true"
+                ></span>
+
+                {{ resultCount() }}
+                {{ resultCount() === 1 ? 'match' : 'matches' }}
+
+              </div>
+
+            }
+
+          </div>
+
+        }
+
+        <!-- LOADING -->
+
+        @if (loading()) {
+
+          <div
+            class="loading-panel"
+            aria-live="polite"
+            aria-busy="true"
+          >
+
+            <div class="loading-orb">
+
+              <mat-spinner
+                diameter="38"
+                aria-label="Loading search results"
+              />
+
+            </div>
+
+            <div>
+
+              <h3>
+                Searching the CNF database
+              </h3>
+
+              <p>
+                Finding foods that match your search.
+              </p>
+
+            </div>
+
+          </div>
+
+        }
+
+        <!-- ERROR -->
+
+        @if (
+          error() &&
+          !loading()
+        ) {
+
+          <div
+            class="state-panel error-panel"
+            role="alert"
+          >
+
+            <div class="state-icon error-icon">
+              !
+            </div>
+
+            <div class="state-content">
+
+              <p class="state-label">
+                CONNECTION ISSUE
+              </p>
+
+              <h3>
+                We couldn't search the database.
+              </h3>
+
+              <p>
+                {{ error() }}
+              </p>
+
+              <button
+                mat-flat-button
+                type="button"
+                class="retry-button"
+                (click)="searchNow()"
+              >
+                Try again
+              </button>
+
+            </div>
+
+          </div>
+
+        }
+
+        <!-- NO RESULTS -->
+
+        @if (
+          searched() &&
+          !loading() &&
+          !error() &&
+          resultCount() === 0 &&
+          query().trim().length >= minimumQueryLength
+        ) {
+
+          <div class="state-panel empty-panel">
+
+            <div class="state-icon empty-icon">
+              ?
+            </div>
+
+            <div class="state-content">
+
+              <p class="state-label">
+                NO MATCHES
+              </p>
+
+              <h3>
+                We couldn't find that food.
+              </h3>
+
+              <p>
+                Try a broader food name, a shorter search,
+                or one of the examples above.
+              </p>
+
+              <div class="empty-suggestions">
+
+                <button
+                  type="button"
+                  (click)="useQuickSearch('apple')"
+                >
+                  Apple
+                </button>
+
+                <button
+                  type="button"
+                  (click)="useQuickSearch('chicken')"
+                >
+                  Chicken
+                </button>
+
+                <button
+                  type="button"
+                  (click)="useQuickSearch('rice')"
+                >
+                  Rice
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+        <!-- RESULTS -->
+
+        @if (
+          !loading() &&
+          !error() &&
+          results().length > 0
+        ) {
+
+          <div
+            id="food-search-results"
+            class="results-list"
+            role="listbox"
+            [attr.aria-label]="'Food search results for ' + query()"
+          >
+
+            @for (
+              food of results();
+              track trackFood($index, food);
+              let i = $index
+            ) {
+
+              <button
+                type="button"
+                class="food-result"
+                [class.is-active]="isActive(i)"
+                [id]="resultId(i)"
+                [attr.aria-selected]="isActive(i)"
+                role="option"
+                (mouseenter)="activeIndex.set(i)"
+                (click)="openFood(food)"
+              >
+
+                <span class="food-result-index">
+                  {{ i + 1 }}
+                </span>
+
+                <span class="food-result-main">
+
+                  <span
+                    class="food-name"
+                    [innerHTML]="highlightName(food.foodName)"
+                  ></span>
+
+                  <span class="food-meta">
+
+                    <span class="food-code">
+                      CNF Food Code {{ food.foodCode }}
+                    </span>
+
+                    <span
+                      class="meta-separator"
+                      aria-hidden="true"
+                    >
+                      ·
+                    </span>
+
+                    <span>
+                      Canadian Nutrient File
+                    </span>
+
+                  </span>
+
+                </span>
+
+                <span class="food-result-action">
+
+                  @if (isActive(i)) {
+
+                    <span class="enter-hint">
+                      Enter
+                    </span>
+
+                  }
+
+                  <span
+                    class="result-arrow"
+                    aria-hidden="true"
+                  >
+                    →
+                  </span>
+
+                </span>
+
+              </button>
+
+            }
+
+          </div>
+
+          @if (resultCount() > results().length) {
+
+            <div class="results-limit-note">
+
+              Showing the first
+              <strong>
+                {{ results().length }}
+              </strong>
+              results.
+              Refine your search for a more specific match.
+
+            </div>
+
+          }
+
+        }
+
+        <!-- INITIAL STATE -->
+
+        @if (
+          !searched() &&
+          !loading() &&
+          !error() &&
+          results().length === 0
+        ) {
+
+          <div class="initial-state">
+
+            <div class="initial-state-copy">
+
+              <p class="section-kicker">
+                START EXPLORING
+              </p>
+
+              <h2>
+                Your food database is ready.
+              </h2>
+
+              <p>
+                Search by food name to open a detailed CNF food
+                profile with nutrient and serving information.
+              </p>
+
+            </div>
+
+            <div class="initial-state-features">
+
+              <div class="feature-card">
+
+                <span class="feature-number">
+                  5,993
+                </span>
+
+                <span class="feature-label">
+                  foods
+                </span>
+
+              </div>
+
+              <div class="feature-card">
+
+                <span class="feature-number">
+                  565K+
+                </span>
+
+                <span class="feature-label">
+                  nutrient records
+                </span>
+
+              </div>
+
+              <div class="feature-card">
+
+                <span class="feature-number">
+                  29,868
+                </span>
+
+                <span class="feature-label">
+                  serving measures
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- ABOUT -->
+    <!-- ==================================================== -->
+
+    <section
+      id="about"
+      class="maliha-about"
+      aria-labelledby="maliha-about-title"
+    >
+
+      <div class="maliha-content-width">
+
+        <div class="maliha-about-card">
+
+          <div class="maliha-about-accent" aria-hidden="true">
+            M
+          </div>
+
+          <div>
+
+            <p class="maliha-section-kicker">
+              About Maliha
+            </p>
+
+            <h2 id="maliha-about-title">
+              Nutrition, thoughtfully made.
+            </h2>
+
+            <p>
+              Maliha presents nutrition information from the
+              Canadian Nutrient File through a simple,
+              approachable search experience.
+            </p>
+
+            <p>
+              The information is organized to make exploring
+              Canadian foods clear, useful, and easy to understand.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ====================================================== -->
+  <!-- FOOTER -->
+  <!-- ====================================================== -->
+
+  <footer class="maliha-footer">
+
+    <div class="maliha-footer-inner">
+
+      <span>
+        Maliha
+      </span>
+
+      <span>
+        Nutrition, thoughtfully made.
+      </span>
+
+    </div>
+
+  </footer>
+
+</div>
