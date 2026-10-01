@@ -50,18 +50,23 @@ jobs:
       - name: Verify Angular build output
         working-directory: src/CNF.Web
         run: |
-          if [ ! -d "dist/CNF.Web" ]; then
-            echo "Angular build output was not found at dist/CNF.Web"
+          if [ ! -d "dist/CNF.Web/browser" ]; then
+            echo "Angular browser output was not found at dist/CNF.Web/browser"
             exit 1
           fi
 
-          echo "Angular build output verified:"
-          find dist/CNF.Web -maxdepth 3 -type f | sort
+          if [ ! -f "dist/CNF.Web/browser/index.html" ]; then
+            echo "index.html was not found at dist/CNF.Web/browser/index.html"
+            exit 1
+          fi
+
+          echo "Angular browser build output verified:"
+          find dist/CNF.Web/browser -maxdepth 2 -type f | sort
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: src/CNF.Web/dist/CNF.Web
+          path: src/CNF.Web/dist/CNF.Web/browser
 
   deploy:
     name: Deploy to GitHub Pages
